@@ -2,7 +2,7 @@ import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import App from './App.vue';
 import router from './router';
-import { useSettingsStore } from '@/stores/settings';
+import { useUserStore } from '@/stores/user.store';
 
 import './assets/main.css';
 
@@ -12,7 +12,7 @@ const pinia = createPinia();
 app.use(pinia);
 app.use(router);
 
-const settingsStore = useSettingsStore(pinia);
-settingsStore.setTheme(settingsStore.themePreference);
+// Initialize user store (theme, etc.)
+const userStore = useUserStore(pinia);
 
 app.mount('#app');
