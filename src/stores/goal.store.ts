@@ -84,5 +84,13 @@ export const useGoalStore = defineStore('goal', () => {
     addGoal,
     updateGoal,
     completeGoal,
+    deleteGoal,
   };
+
+  async function deleteGoal(id: number) {
+    const index = goals.value.findIndex(g => g.id === id);
+    if (index !== -1) {
+      goals.value.splice(index, 1);
+    }
+  }
 });

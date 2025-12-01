@@ -26,6 +26,13 @@
     </div>
 
     <div class="mt-4 flex justify-end gap-2">
+      <button
+        v-if="!goal.completed"
+        @click="$emit('complete', goal.id)"
+        class="text-sm text-green-600 hover:text-green-700 font-medium"
+      >
+        Complete
+      </button>
       <button @click="$emit('edit', goal)" class="text-sm text-gray-500 hover:text-blue-500">Edit</button>
       <button @click="$emit('delete', goal.id)" class="text-sm text-gray-500 hover:text-red-500">Delete</button>
     </div>
@@ -39,5 +46,5 @@ defineProps<{
   goal: Goal
 }>();
 
-defineEmits(['edit', 'delete']);
+defineEmits(['edit', 'delete', 'complete']);
 </script>

@@ -12,6 +12,7 @@
       :goal="goal"
       @edit="$emit('edit', $event)"
       @delete="$emit('delete', $event)"
+      @complete="$emit('complete', $event)"
     />
   </div>
 </template>
@@ -25,5 +26,5 @@ defineProps<{
   loading?: boolean;
 }>();
 
-defineEmits(['edit', 'delete']);
+defineEmits(['edit', 'delete', 'complete']);
 </script>

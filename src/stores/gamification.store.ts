@@ -207,5 +207,10 @@ export const useGamificationStore = defineStore('gamification', () => {
     currentReward,
     clearReward,
     achievements,
+    level,
+    streak,
+    xp,
+    coins,
+    xpToNextLevel,
   };
 });

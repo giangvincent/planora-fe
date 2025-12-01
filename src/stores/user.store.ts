@@ -8,6 +8,8 @@ export const useUserStore = defineStore('user', () => {
     notifications: true,
     sound: true,
     showPixelWorld: true,
+    name: 'Vincent', // Default name
+    email: 'vincent@example.com', // Default email
   });
 
   const preferredDark = usePreferredDark();
