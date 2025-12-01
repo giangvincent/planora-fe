@@ -12,6 +12,7 @@
   "dependencies": {
     "@vueuse/core": "^10.9.0",
     "axios": "^1.6.8",
+    "firebase": "^12.6.0",
     "pinia": "^2.1.7",
     "pixi.js": "^8.14.3",
     "tailwindcss-animate": "^1.0.7",

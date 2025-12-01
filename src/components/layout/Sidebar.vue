@@ -129,7 +129,8 @@
 
 <script setup>
 import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth.store';
 
 defineProps({
   collapsed: {
@@ -141,6 +142,8 @@ defineProps({
 defineEmits(['toggle']);
 
 const route = useRoute();
+const router = useRouter();
+const authStore = useAuthStore();
 
 const navigation = computed(() => [
   {
