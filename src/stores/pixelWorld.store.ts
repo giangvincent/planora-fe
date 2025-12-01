@@ -41,11 +41,18 @@ export const usePixelWorldStore = defineStore('pixelWorld', () => {
     }
   }
 
+  function checkRewards() {
+    // Logic to update world based on inventory/level
+    // For example, if user has a pet in inventory, ensure it's in the world objects
+    // This is a placeholder for visual updates
+  }
+
   return {
     world,
     loaded,
     addObject,
     setWeather,
     unlockZone,
+    checkRewards,
   };
 });

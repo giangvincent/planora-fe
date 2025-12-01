@@ -2,6 +2,9 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { useStorage } from '@vueuse/core';
 import { useGamificationStore } from './gamification.store';
+import { usePixelWorldStore } from './pixelWorld.store';
+
+
 // import api from '@/services/api/http'; // Uncomment when API is ready
 
 export interface Task {
@@ -12,6 +15,7 @@ export interface Task {
   goalId?: number;
   completed: boolean;
   priority?: 'low' | 'medium' | 'high';
+  isWeeklyFocus?: boolean;
 }
 
 const defaultTasks: Task[] = [
@@ -90,6 +94,23 @@ export const useTaskStore = defineStore('task', () => {
     if (task && !task.completed) {
       await updateTask(id, { completed: true });
       gamificationStore.onTaskCompleted(task);
+      checkWeeklyPlanCompletion();
+    }
+  }
+
+  function checkWeeklyPlanCompletion() {
+    // Check if there are any weekly focus tasks
+    const weeklyTasks = tasks.value.filter(t => t.isWeeklyFocus);
+    if (weeklyTasks.length === 0) return;
+
+    // Check if all are completed
+    const allCompleted = weeklyTasks.every(t => t.completed);
+    if (allCompleted) {
+      // Trigger Map Expansion
+      const pixelStore = usePixelWorldStore();
+      // Assuming we unlock a specific zone for weekly plan, or just the next available one
+      pixelStore.unlockZone('mountain_zone'); // Example
+      gamificationStore.addXp(200); // Bonus XP for weekly plan
     }
   }
 
@@ -115,5 +136,6 @@ export const useTaskStore = defineStore('task', () => {
     updateTask,
     completeTask,
     removeTask,
+    checkWeeklyPlanCompletion,
   };
 });

@@ -8,6 +8,7 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import * as PIXI from 'pixi.js';
 import { usePixelWorldStore } from '@/stores/pixelWorld.store';
+import { useGamificationStore } from '@/stores/gamification.store';
 
 const container = ref<HTMLElement | null>(null);
 const pixelStore = usePixelWorldStore();
@@ -40,19 +41,52 @@ onMounted(async () => {
   // Render objects from store
   renderObjects(worldContainer);
 
+  // Render Pets
+  renderPets(worldContainer);
+
   // Listen for resize
   window.addEventListener('resize', onResize);
 });
 
 function renderObjects(stage: PIXI.Container) {
-  // Clear existing objects if needed or just add new ones
-  // For demo, let's add a simple placeholder for objects
   pixelStore.world.objects.forEach(obj => {
     const graphics = new PIXI.Graphics();
     graphics.rect(obj.x, obj.y, 32, 32);
-    graphics.fill(0x8B4513); // Brown box (tree trunk?)
+
+    // Different colors for different objects
+    if (obj.type === 'tree') graphics.fill(0x8B4513);
+    else if (obj.type === 'house') graphics.fill(0xA52A2A);
+    else graphics.fill(0xCCCCCC);
+
     stage.addChild(graphics);
   });
+
+  // Render Unlocked Zones (visual representation)
+  if (pixelStore.world.unlockedZones.includes('forest_zone')) {
+    const forest = new PIXI.Graphics();
+    forest.rect(app!.screen.width - 100, app!.screen.height - 150, 80, 80);
+    forest.fill(0x006400); // Dark Green Forest
+    stage.addChild(forest);
+  }
+
+  if (pixelStore.world.unlockedZones.includes('mountain_zone')) {
+    const mountain = new PIXI.Graphics();
+    mountain.moveTo(100, app!.screen.height - 100);
+    mountain.lineTo(150, app!.screen.height - 200);
+    mountain.lineTo(200, app!.screen.height - 100);
+    mountain.fill(0x808080); // Grey Mountain
+    stage.addChild(mountain);
+  }
+}
+
+function renderPets(stage: PIXI.Container) {
+  const gamificationStore = useGamificationStore();
+  if (gamificationStore.inventory.pets.includes('pixel_pet_dog')) {
+    const pet = new PIXI.Graphics();
+    pet.circle(app!.screen.width / 2 + 50, app!.screen.height - 120, 10);
+    pet.fill(0xD2691E); // Chocolate dog
+    stage.addChild(pet);
+  }
 }
 
 function onResize() {

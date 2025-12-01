@@ -14,9 +14,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import Navbar from '@/components/Navbar.vue';
 import Sidebar from '@/components/Sidebar.vue';
+import { useGamificationStore } from '@/stores/gamification.store';
 
 const isSidebarCollapsed = ref(false);
+const gamificationStore = useGamificationStore();
+
+onMounted(() => {
+  // Check daily login / streak
+  gamificationStore.checkDailyStreak();
+  gamificationStore.claimDailySpark();
+});
 </script>

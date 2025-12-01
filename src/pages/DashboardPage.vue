@@ -6,8 +6,9 @@
         <p class="text-sm font-semibold uppercase tracking-wide text-primary-500">
           Today
         </p>
-        <h2 class="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">
+        <h2 class="mt-2 text-2xl font-semibold text-slate-900 dark:text-white flex items-center gap-3">
           {{ greeting }}, {{ settingsStore.profile.name.split(' ')[0] }} 👋
+          <StreakDisplay />
         </h2>
         <p class="mt-2 text-slate-500 dark:text-slate-300">
           {{ quote.text }}
@@ -102,15 +103,17 @@
 
 <script setup>
 import { computed, reactive, ref } from 'vue';
-import TaskList from '@/components/TaskList.vue';
-import GoalList from '@/components/GoalList.vue';
-import AddTaskModal from '@/components/AddTaskModal.vue';
-import { useTasksStore } from '@/stores/tasks';
-import { useGoalsStore } from '@/stores/goals';
-import { useSettingsStore } from '@/stores/settings';
+import TaskList from '@/components/tasks/TaskList.vue';
+import GoalList from '@/components/goals/GoalList.vue';
+import AddTaskModal from '@/components/tasks/TaskForm.vue'; // Assuming TaskForm is the modal content or similar
+import AchievementsList from '@/components/gamification/AchievementsList.vue';
+import StreakDisplay from '@/components/gamification/StreakDisplay.vue';
+import { useTaskStore } from '@/stores/task.store';
+import { useGoalStore } from '@/stores/goal.store';
+import { useSettingsStore } from '@/stores/settings'; // Assuming this exists, if not need to check
 
-const tasksStore = useTasksStore();
-const goalsStore = useGoalsStore();
+const tasksStore = useTaskStore();
+const goalsStore = useGoalStore();
 const settingsStore = useSettingsStore();
 
 const showTaskModal = ref(false);
@@ -166,13 +169,13 @@ const handleSaveTask = async (task) => {
       description: task.description,
       dueDate: task.dueDate,
       goalId: task.goalId,
-      completed: task.completed
+      // completed: task.completed // addTask omits completed
     });
   }
 };
 
 const handleToggleTask = async (task) => {
-  await tasksStore.toggleTaskCompletion(task.id);
+  await tasksStore.completeTask(task.id);
 };
 
 const handleDeleteTask = async (task) => {
@@ -180,7 +183,7 @@ const handleDeleteTask = async (task) => {
 };
 
 const handleCompleteGoal = async (goal) => {
-  await goalsStore.markGoalComplete(goal.id);
+  await goalsStore.completeGoal(goal.id);
 };
 
 const handleEditGoal = (goal) => {

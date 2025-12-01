@@ -71,6 +71,7 @@ export const useGoalStore = defineStore('goal', () => {
       // Big reward for goal completion
       gamificationStore.addXp(100);
       gamificationStore.addCoins(50);
+      gamificationStore.addChest(1);
     }
   }
 

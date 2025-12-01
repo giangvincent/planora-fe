@@ -12,12 +12,24 @@
     </button>
 
     <div class="flex-1 min-w-0">
-      <h3
-        class="font-medium truncate"
-        :class="{ 'line-through text-gray-500': task.completed }"
-      >
-        {{ task.title }}
-      </h3>
+      <div class="flex items-center gap-2 mb-1">
+        <h3
+          class="font-medium truncate"
+          :class="{ 'line-through text-gray-500': task.completed }"
+        >
+          {{ task.title }}
+        </h3>
+        <!-- Badges -->
+        <span v-if="task.isWeeklyFocus" class="px-1.5 py-0.5 text-[10px] font-bold bg-purple-100 text-purple-700 rounded border border-purple-200">
+          WEEKLY
+        </span>
+        <span
+          class="px-1.5 py-0.5 text-[10px] font-bold rounded border"
+          :class="priorityClass"
+        >
+          +{{ xpReward }} XP
+        </span>
+      </div>
       <p v-if="task.description" class="text-xs text-gray-500 truncate">{{ task.description }}</p>
     </div>
 
@@ -51,4 +63,21 @@ function toggleComplete() {
     taskStore.updateTask(props.task.id, { completed: false });
   }
 }
+
+import { computed } from 'vue';
+
+const xpReward = computed(() => {
+  let base = 10;
+  if (props.task.priority === 'medium') base += 5;
+  if (props.task.priority === 'high') base += 10;
+  return base;
+});
+
+const priorityClass = computed(() => {
+  switch (props.task.priority) {
+    case 'high': return 'bg-red-100 text-red-700 border-red-200';
+    case 'medium': return 'bg-orange-100 text-orange-700 border-orange-200';
+    default: return 'bg-green-100 text-green-700 border-green-200';
+  }
+});
 </script>
