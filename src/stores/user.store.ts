@@ -5,6 +5,7 @@ import { useStorage, usePreferredDark } from '@vueuse/core';
 export const useUserStore = defineStore('user', () => {
   const preferences = useStorage('planora_preferences', {
     theme: 'system', // 'light', 'dark', 'system'
+    pixelMode: true, // Default to true for the transition
     notifications: true,
     sound: true,
     showPixelWorld: true,
@@ -31,6 +32,10 @@ export const useUserStore = defineStore('user', () => {
     applyTheme();
   }
 
+  function togglePixelMode() {
+    preferences.value.pixelMode = !preferences.value.pixelMode;
+  }
+
   function applyTheme() {
     if (typeof document === 'undefined') return;
     const root = document.documentElement;
@@ -49,5 +54,6 @@ export const useUserStore = defineStore('user', () => {
     isDark,
     toggleTheme,
     setTheme,
+    togglePixelMode,
   };
 });

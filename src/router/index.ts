@@ -44,6 +44,24 @@ const router = createRouter({
           component: () => import('@/views/app/GoalsView.vue')
         },
         {
+          path: 'roles',
+          name: 'roles',
+          component: () => import('@/views/app/RolesView.vue'),
+          meta: { title: 'Quest Library' }
+        },
+        {
+          path: 'roles/new',
+          name: 'role-create',
+          component: () => import('@/views/app/RoleCreateView.vue'),
+          meta: { title: 'New Quest' }
+        },
+        {
+          path: 'roles/:id',
+          name: 'role-detail',
+          component: () => import('@/views/app/RoleDetailView.vue'),
+          meta: { title: 'Quest Log' }
+        },
+        {
           path: 'calendar',
           name: 'calendar',
           component: () => import('@/views/app/CalendarView.vue')

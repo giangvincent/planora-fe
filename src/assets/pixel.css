@@ -1,0 +1,96 @@
+/* Pixel Theme Variables */
+:root {
+  /* Colors - keeping it minimal effectively, but robust */
+  --pixel-primary: #3b82f6;   /* Bright Blue */
+  --pixel-accent: #8b5cf6;    /* Violet */
+  --pixel-danger: #ef4444;    /* Red */
+  --pixel-success: #22c55e;   /* Green */
+  --pixel-warning: #f59e0b;   /* Amber */
+  --pixel-surface: #ffffff;
+  --pixel-background: #f8fafc;
+  --pixel-text: #1e293b;
+  --pixel-border-color: #0f172a; /* Dark border for high contrast */
+
+  /* XP & Coins */
+  --pixel-xp: #a855f7;        /* Purple for XP */
+  --pixel-coin: #eab308;      /* Gold for Coins */
+
+  /* Spacing */
+  --pixel-sm: 4px;
+  --pixel-md: 8px;
+  --pixel-lg: 16px;
+  --pixel-xl: 32px;
+}
+
+/* Dark Mode Overrides (if we decide to support it immediately, good to have placeholders) */
+.dark {
+  --pixel-surface: #1e293b;
+  --pixel-background: #0f172a;
+  --pixel-text: #f8fafc;
+  --pixel-border-color: #f8fafc;
+}
+
+/* Utility Classes */
+
+/* Pixel Borders - Chunky */
+.pixel-border {
+  border: 4px solid var(--pixel-border-color);
+  border-radius: 4px; /* Slight rounding looks good with "chunky" or can be 0 */
+  box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.2);
+}
+
+.pixel-border-sm {
+    border: 2px solid var(--pixel-border-color);
+    box-shadow: 2px 2px 0px 0px rgba(0,0,0,0.2);
+}
+
+/* Pixel Card */
+.pixel-card {
+  background-color: var(--pixel-surface);
+  border: 2px solid var(--pixel-border-color);
+  box-shadow: 4px 4px 0px 0px var(--pixel-border-color);
+  transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+}
+
+.pixel-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px var(--pixel-border-color);
+}
+
+/* Pixel Button */
+.pixel-btn {
+  font-family: 'Press Start 2P', cursive, sans-serif; /* Fallback */
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  padding: 12px 24px;
+  border: 4px solid var(--pixel-border-color);
+  background-color: var(--pixel-primary);
+  color: white;
+  box-shadow: 4px 4px 0px 0px #000;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.pixel-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px #000;
+}
+
+.pixel-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px #000;
+}
+
+.pixel-btn-accent {
+    background-color: var(--pixel-accent);
+}
+
+.pixel-btn-danger {
+    background-color: var(--pixel-danger);
+}
+
+/* Text Utilities */
+.font-pixel {
+  font-family: 'Courier New', Courier, monospace; /* Placeholder until font loaded */
+  letter-spacing: -0.5px;
+}

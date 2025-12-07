@@ -47,49 +47,53 @@
         />
       </div>
 
-      <!-- Sidebar: World Preview & Goals -->
+      <!-- Sidebar: World Preview & Roles -->
       <div class="space-y-8">
         <!-- World Preview -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
-          <h2 class="font-bold mb-4 flex items-center gap-2">
-            <span>Your World</span>
-            <span class="text-xs font-normal text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">Level {{ gamificationStore.level }}</span>
-          </h2>
-          <div class="h-48 rounded-lg overflow-hidden relative group">
-             <PixelWorldCanvas />
-             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none"></div>
-             <RouterLink to="/app/world" class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/20 text-white font-bold transition-opacity backdrop-blur-[2px]">
-               Enter World
-             </RouterLink>
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+          <div class="flex justify-between items-center mb-4">
+               <h2 class="font-bold flex items-center gap-2">
+                <span>Pixel World</span>
+                <span class="text-xs font-normal text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">Level {{ gamificationStore.level }}</span>
+              </h2>
+              <RouterLink to="/app/world" class="text-xs text-primary-600 hover:underline">Full Screen >></RouterLink>
           </div>
+
+          <div class="h-48 rounded-lg overflow-hidden relative group border-4 border-slate-900">
+             <PixelWorldCanvas />
+             <!-- Overlay -->
+             <div class="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors pointer-events-none"></div>
+             <!-- Mini HUD -->
+             <div class="absolute bottom-2 right-2 text-xs bg-black/50 text-white p-1 rounded font-pixel">
+                 {{ worldStore.items.length }} Objects
+             </div>
+          </div>
+        </div>
+
+        <!-- Active Quest/Role -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-0 border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden" v-if="rolesStore.activeRole">
+             <div class="p-4 border-b border-gray-100 bg-slate-50">
+                 <h2 class="font-bold text-sm uppercase text-slate-500">Current Quest</h2>
+             </div>
+             <div class="p-4">
+                 <div class="flex items-center gap-4 mb-4">
+                     <div class="text-2xl bg-white p-2 rounded shadow-sm border">{{ rolesStore.activeRole.icon }}</div>
+                     <div>
+                         <h3 class="font-bold text-slate-900">{{ rolesStore.activeRole.title }}</h3>
+                         <p class="text-xs text-slate-500">{{ rolesStore.activeRole.completedPhases }} / {{ rolesStore.activeRole.totalPhases }} Phases Complete</p>
+                     </div>
+                 </div>
+                 <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                    <div class="bg-blue-600 h-2.5 rounded-full" :style="{ width: `${rolesStore.activeRole.progress}%` }"></div>
+                 </div>
+                 <div class="mt-4 text-right">
+                     <RouterLink :to="{ name: 'role-detail', params: { id: rolesStore.activeRole.id }}" class="text-sm font-bold text-primary-600 hover:underline">Continue Journey &rarr;</RouterLink>
+                 </div>
+             </div>
         </div>
 
         <!-- Achievements -->
         <AchievementsList />
-
-        <!-- Active Goals -->
-        <div>
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="font-bold">Active Goals</h2>
-            <RouterLink to="/app/goals" class="text-xs text-primary-600 hover:underline">Manage</RouterLink>
-          </div>
-
-          <div v-if="goalStore.activeGoals.length === 0" class="text-sm text-gray-500 text-center py-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed">
-            No active goals.
-          </div>
-
-          <div class="space-y-4">
-            <div v-for="goal in goalStore.activeGoals.slice(0, 3)" :key="goal.id" class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-sm transition-shadow">
-              <div class="flex justify-between items-start mb-2">
-                <h3 class="font-bold text-sm line-clamp-1">{{ goal.title }}</h3>
-                <span class="text-xs font-mono bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded">{{ goal.progress }}%</span>
-              </div>
-              <div class="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                <div class="h-full bg-blue-500 transition-all duration-500" :style="{ width: `${goal.progress}%` }"></div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -110,6 +114,8 @@ import { useUserStore } from '@/stores/user.store';
 import { useTaskStore } from '@/stores/task.store';
 import { useGoalStore } from '@/stores/goal.store';
 import { useGamificationStore } from '@/stores/gamification.store';
+import { useRolesStore } from '@/stores/roles.store';
+import { useWorldStore } from '@/stores/world.store';
 
 import XPBar from '@/components/gamification/XPBar.vue';
 import StreakDisplay from '@/components/gamification/StreakDisplay.vue';
@@ -122,6 +128,8 @@ const userStore = useUserStore();
 const taskStore = useTaskStore();
 const goalStore = useGoalStore();
 const gamificationStore = useGamificationStore();
+const rolesStore = useRolesStore();
+const worldStore = useWorldStore();
 // const settingsStore = useSettingsStore(); // Optional if needed
 
 // State for Modal

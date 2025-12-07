@@ -5,6 +5,7 @@ import router from './router';
 import { useUserStore } from '@/stores/user.store';
 
 import './assets/main.css';
+import './assets/pixel.css';
 
 const app = createApp(App);
 const pinia = createPinia();

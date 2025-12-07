@@ -1,5 +1,5 @@
 <template>
-  <div ref="container" class="w-full h-full bg-sky-200 relative overflow-hidden rounded-xl">
+  <div ref="container" class="w-full h-full bg-sky-200 relative overflow-hidden rounded-xl cursor-crosshair">
     <!-- Canvas will be injected here -->
   </div>
 </template>
@@ -7,100 +7,97 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import * as PIXI from 'pixi.js';
-import { usePixelWorldStore } from '@/stores/pixelWorld.store';
-import { useGamificationStore } from '@/stores/gamification.store';
+import { useWorldStore } from '@/stores/world.store';
+
+const props = defineProps({
+    interactive: {
+        type: Boolean,
+        default: false
+    }
+});
 
 const container = ref<HTMLElement | null>(null);
-const pixelStore = usePixelWorldStore();
+const worldStore = useWorldStore();
 
 let app: PIXI.Application | null = null;
 
 onMounted(async () => {
-  if (!container.value) return;
+    if (!container.value) return;
 
-  app = new PIXI.Application();
+    app = new PIXI.Application();
 
-  await app.init({
-    resizeTo: container.value,
-    backgroundColor: 0x87CEEB, // Sky blue
-    antialias: false, // Pixel art look
-  });
+    await app.init({
+        resizeTo: container.value,
+        backgroundColor: 0x87CEEB,
+        antialias: false,
+    });
 
-  container.value.appendChild(app.canvas);
+    if (container.value) { // Re-check after async
+        container.value.appendChild(app.canvas);
+    }
 
-  // Create a container for the world
-  const worldContainer = new PIXI.Container();
-  app.stage.addChild(worldContainer);
+    const worldContainer = new PIXI.Container();
+    app.stage.addChild(worldContainer);
 
-  // Ground
-  const ground = new PIXI.Graphics();
-  ground.rect(0, app.screen.height - 100, app.screen.width, 100);
-  ground.fill(0x228B22); // Forest green
-  worldContainer.addChild(ground);
+    // Ground
+    renderGround(worldContainer);
 
-  // Render objects from store
-  renderObjects(worldContainer);
+    // Initial render
+    renderObjects(worldContainer);
 
-  // Render Pets
-  renderPets(worldContainer);
+    // Watch for store changes to re-render
+    // Note: In a real game loop, we wouldn't clear/redraw everything, but for Vue integration this is simple
+    watch(() => worldStore.items, () => {
+        worldContainer.removeChildren();
+        renderGround(worldContainer);
+        renderObjects(worldContainer);
+    }, { deep: true });
 
-  // Listen for resize
-  window.addEventListener('resize', onResize);
+    // Click to place logic (Mock placement for now)
+    if (props.interactive) {
+        app.stage.eventMode = 'static';
+        app.stage.hitArea = app.screen;
+        // In a full implementation, we'd handle clicks here to place items from selected inventory
+    }
 });
 
+function renderGround(stage: PIXI.Container) {
+    if (!app) return;
+    const ground = new PIXI.Graphics();
+    ground.rect(0, app.screen.height - 100, app.screen.width, 100);
+    ground.fill(0x228B22);
+    stage.addChild(ground);
+}
+
 function renderObjects(stage: PIXI.Container) {
-  pixelStore.world.objects.forEach(obj => {
-    const graphics = new PIXI.Graphics();
-    graphics.rect(obj.x, obj.y, 32, 32);
+    worldStore.items.forEach(obj => {
+        const graphics = new PIXI.Graphics();
 
-    // Different colors for different objects
-    if (obj.type === 'tree') graphics.fill(0x8B4513);
-    else if (obj.type === 'house') graphics.fill(0xA52A2A);
-    else graphics.fill(0xCCCCCC);
+        // Simple pixel art placeholders
+        if (obj.type === 'tree') {
+            graphics.rect(obj.x + 12, obj.y + 16, 8, 16); // Trunk
+            graphics.fill(0x8B4513);
+            graphics.rect(obj.x, obj.y, 32, 20); // Leaves
+            graphics.fill(parseInt(obj.color.replace('#', '0x')));
+        } else if (obj.type === 'house') {
+            graphics.rect(obj.x, obj.y + 20, 40, 30); // Base
+            graphics.fill(parseInt(obj.color.replace('#', '0x')));
+            graphics.moveTo(obj.x - 5, obj.y + 20); // Roof
+            graphics.lineTo(obj.x + 20, obj.y - 10);
+            graphics.lineTo(obj.x + 45, obj.y + 20);
+            graphics.fill(0x800000);
+        } else {
+             graphics.rect(obj.x, obj.y, 24, 24);
+             graphics.fill(parseInt(obj.color.replace('#', '0x')));
+        }
 
-    stage.addChild(graphics);
-  });
-
-  // Render Unlocked Zones (visual representation)
-  if (pixelStore.world.unlockedZones.includes('forest_zone')) {
-    const forest = new PIXI.Graphics();
-    forest.rect(app!.screen.width - 100, app!.screen.height - 150, 80, 80);
-    forest.fill(0x006400); // Dark Green Forest
-    stage.addChild(forest);
-  }
-
-  if (pixelStore.world.unlockedZones.includes('mountain_zone')) {
-    const mountain = new PIXI.Graphics();
-    mountain.moveTo(100, app!.screen.height - 100);
-    mountain.lineTo(150, app!.screen.height - 200);
-    mountain.lineTo(200, app!.screen.height - 100);
-    mountain.fill(0x808080); // Grey Mountain
-    stage.addChild(mountain);
-  }
-}
-
-function renderPets(stage: PIXI.Container) {
-  const gamificationStore = useGamificationStore();
-  if (gamificationStore.inventory.pets.includes('pixel_pet_dog')) {
-    const pet = new PIXI.Graphics();
-    pet.circle(app!.screen.width / 2 + 50, app!.screen.height - 120, 10);
-    pet.fill(0xD2691E); // Chocolate dog
-    stage.addChild(pet);
-  }
-}
-
-function onResize() {
-  if (app && container.value) {
-    app.resize();
-    // Re-draw ground
-    // In a real game, you'd have a better camera/viewport system
-  }
+        stage.addChild(graphics);
+    });
 }
 
 onUnmounted(() => {
-  window.removeEventListener('resize', onResize);
-  if (app) {
-    app.destroy(true, { children: true });
-  }
+    if (app) {
+        app.destroy(true, { children: true });
+    }
 });
 </script>
